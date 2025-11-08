@@ -357,7 +357,7 @@ function sellStock(i){
   }
 }
 function updateBalance(){
-  document.getElementById('balanceVal').textContent = balance;
+  document.getElementById('balanceVal').textContent = balance.toFixed(1);
 }
 
 function triggerMarketEvents(){
@@ -420,7 +420,7 @@ function renderTimer(){
 function gameEnd(){
   document.getElementById('game').style.display='none';
   document.getElementById('end').style.display='block';
-  document.getElementById('final-balance').textContent='Végső egyenleg: '+balance;
+  document.getElementById('final-balance').textContent='Végső egyenleg: '+balance.toFixed(1);
 }
 function showPopup(type,msg){
   let box;
@@ -475,5 +475,6 @@ function drawChart(canvas,data,color){
 </script>
 </body>
 </html>
+
 
 
