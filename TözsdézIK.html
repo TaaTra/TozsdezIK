@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <title>TőzsdézIK</title>
+  <style>
+    html, body { height: 100%; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #fff;
+      margin: 0; padding: 20px 0 0 0; text-align: center;
+      min-height: 100vh; max-height: 100vh; overflow: hidden;
+    }
+    .side-decor {
+      position: fixed;
+      top: 0; bottom: 0;
+      width: 132px;
+      pointer-events:none;
+      z-index: 0;
+      opacity: 0.5;
+    }
+    .side-left { left: 0; }
+    .side-right { right: 0; transform: scaleX(-1);}
+    .currencies {
+      position: absolute;
+      font-size: 55px;
+      color: #b5b5b5;
+      font-weight: bold;
+      left: 12px; top: 38px;
+    }
+    .currencies span {
+      position: absolute;
+      opacity: 0.6;
+      animation: floatY 4s infinite alternate;
+    }
+    .curr1 { top: 18px; left: 6px; color:#98c2ee; animation-duration:3s;}
+    .curr2 { top: 65px; left: 30px; color:#eec498; animation-duration:4s;}
+    .curr3 { top: 110px; left: 35px; color:#a3e9b7; animation-duration:5s;}
+    .curr4 { top: 185px; left: 12px; color:#eee7aa; animation-duration:5.2s;}
+    @keyframes floatY {
+      from { transform: translateY(0px);}
+      to   { transform: translateY(16px);}
+    }
+    .svg-stockline {
+      position: absolute; left:2px; bottom:30px;
+      width:130px; height:220px; z-index:0; opacity:0.6;
+    }
+    .svg-right { transform: scaleX(-1); right:2px; left:auto;}
+    .start-screen, .game-screen, .end-screen { display: none; }
+    #charts { display: flex; flex-direction: column; gap: 22px; justify-content: center; margin: 22px 0;}
+    .chart-row { width: 100%; display: flex; justify-content: center; gap: 10px;}
+    .chart-container { border: 1px solid #ccc; border-radius: 8px; padding: 10px; width: 190px; min-height: 270px; background: #f6f6f6; box-shadow: 2px 2px 6px #eee; display: flex; flex-direction: column; align-items: center;}
+    .chart-title { font-size: 1.1em; margin-bottom: 7px; font-weight: bold; }
+    .chart-canvas { background: #fff; border-radius: 5px; margin-bottom:3px;}
+    .actions { margin-top: 7px; }
+    .actions button { margin: 0 5px; padding: 4px 18px; font-size: 1em; }
+    .stock-price { font-size: 1.07em; font-family: 'Segoe UI', Arial, sans-serif; margin-top: 10px; margin-bottom: 2px; letter-spacing: 2px; }
+    .stock-count { font-size: 0.95em; margin-bottom: 7px; }
+    .balance { font-size: 1.13em; margin-top: 8px; }
+    .balance .val { font-weight: bold; font-size: 1.16em;}
+    .percent-box { font-weight: bold; margin-top: 4px; }
+    #timer { font-size: 1.25em; margin-bottom: 8px; font-weight: bold; letter-spacing: 2px;}
+    #timer .val { font-weight: bold; font-size: 1.2em;}
+    #final-balance { font-weight: bold; font-size: 2em; margin-top: 20px; }
+    .locked { opacity: 0.55; background: #eee; position: relative;}
+    .unlock-box { font-size: 1em; margin-top: 7px; color: #555; }
+    .unlock-ready { background: #ffd6dc; border-radius: 9px; margin-top: 10px; padding: 7px 8px; color: #d00; font-weight: bold; border: 2px solid #d00; display:flex; flex-direction:column; align-items:center;}
+    .unlock-btn { margin-top:7px; background:#d00; color:white; border:none; border-radius:6px; padding:5px 18px; font-size:1em; font-weight:bold; cursor:pointer; }
+    .event-popup, .achievement-popup, .crash-popup, .rally-popup {
+      position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+      background: #ffd; border: 2px solid #333; border-radius: 14px;
+      z-index: 2000;
+      box-shadow: 0 3px 22px #999;
+      padding: 20px 26px;
+      font-size: 1.18em;
+      display:none;
+      max-width: 92vw; word-break: break-word; color: black;
+    }
+    .crash-popup.show { background:#e04040 !important; color:white !important; border:2px solid #b30000 !important;}
+    .event-popup.show, .achievement-popup.show, .rally-popup.show { display:block; animation: popIn 0.3s; }
+    .crash-popup.show { display:block; animation: popIn 0.3s;}
+    @keyframes popIn { from {transform:translateX(-50%) scale(0.5);} to {transform:translateX(-50%) scale(1);} }
+    .rally-indicator { color:#dc143c; font-weight:bold; font-size:1.11em; margin-top:2px; margin-bottom:2px; }
+  </style>
+</head>
+<body>
+  <!-- OLDALSÓ DEKOR -->
+  <div class="side-decor side-left">
+    <div class="currencies">
+      <span class="curr1">$</span>
+      <span class="curr2">€</span>
+      <span class="curr3">£</span>
+      <span class="curr4">$</span>
+    </div>
+    <svg class="svg-stockline" viewBox="0 0 70 50">
+      <polyline points="0,40 12,44 20,22 25,13 32,33 37,7 47,25 60,11 70,20"
+                stroke="#88abce" stroke-width="3" fill="none"/>
+    </svg>
+  </div>
+  <div class="side-decor side-right">
+    <div class="currencies">
+      <span class="curr2">$</span>
+      <span class="curr1">€</span>
+      <span class="curr3">£</span>
+    </div>
+    <svg class="svg-stockline svg-right" viewBox="0 0 70 50">
+      <polyline points="0,20 12,38 20,11 25,23 32,28 37,12 47,39 60,13 70,29"
+                stroke="#eec498" stroke-width="3" fill="none"/>
+    </svg>
+  </div>
+
+  <div id="eventPopup" class="event-popup"></div>
+  <div id="achievementPopup" class="achievement-popup"></div>
+  <div id="crashPopup" class="crash-popup"></div>
+  <div id="rallyPopup" class="rally-popup"></div>
+  <div id="start" class="start-screen" style="display:block;">
+    <h1>TőzsdézIK</h1>
+    <div id="timerStart" style="font-size:2em; margin-bottom:20px; font-weight: bold;">10 : 00</div>
+    <button id="start-btn" style="font-size:2em;">START</button>
+  </div>
+  <div id="game" class="game-screen">
+    <div id="timer"><span class="val">10 : 00</span></div>
+    <div class="balance">Egyenleg: <span class="val" id="balanceVal">5000</span></div>
+    <div id="charts"></div>
+  </div>
+  <div id="end" class="end-screen">
+    <h2>Játék vége!</h2>
+    <div id="final-balance"></div>
+    <br><br>
+    <button onclick="location.reload()">Újra</button>
+  </div>
+<script>
+const START_BALANCE = 5000;
+const MAX_BALANCE = 15000;
+const CRASH_LOSS = 5000;
+const STOCKS = [
+  { ticker: 'A001', name: 'Microsoft', color: '#337ab7', min: 50, max: 250, volatility: 1.0, bias: 0.75, trendUpOnBuy: false, trendUpOnSell: true },
+  { ticker: 'B002', name: 'Apple', color: '#d9534f', min: 200, max: 375, volatility: 0.5, bias: 0.65, trendUpOnBuy: false, trendUpOnSell: true },
+  { ticker: 'C003', name: 'Nvidia', color: '#5bc0de', min: 300, max: 400, volatility: 2.5, bias: 0.70, trendUpOnBuy: true,  trendUpOnSell: true }, // szerencsés!
+  { ticker: 'D004', name: 'Google', color: '#5cb85c', min: 150, max: 500, volatility: 1.5, bias: 0.40, trendUpOnBuy: false, trendUpOnSell: true },
+  { ticker: 'E005', name: 'Amazon', color: '#d088da', min: 450, max: 750, volatility: 1.0, bias: 0.65, locked: true, unlockAt: 60, unlockCost: 0, trendUpOnBuy: false, trendUpOnSell: true },
+  { ticker: 'F006', name: 'Tesla', color: '#e7a641', min: 600, max: 1000, volatility: 3.5, bias: 0.80, locked: true, unlockAt: 180, unlockCost: 500, trendUpOnBuy: true,  trendUpOnSell: true }, // szerencsés!
+  { ticker: 'G007', name: 'Oracle ', color: '#61a4b3', min: 500, max: 1000, volatility: 4.5, bias: 0.60, locked: true, unlockAt: 300, unlockCost: 1000, trendUpOnBuy: false, trendUpOnSell: true },
+  { ticker: 'H008', name: 'Visa', color: '#e04040', min: 400, max: 2000, volatility: 6.5, bias: 0.50, locked: true, unlockAt: 480, unlockCost: 2500, trendUpOnBuy: false, trendUpOnSell: true }
+];
+let balance = START_BALANCE;
+let timer = 600;
+let intervalId;
+let stockPrices = [];
+let stockCounts = [];
+let trends = [];
+let histories = [];
+let unlockedStocks = new Array(STOCKS.length).fill(false);
+let achievements = { doubled: false, lostBig: false, crash: false, rally: false };
+let rallyActive = false;
+let rallyCountdown = 0;
+
+document.getElementById('start-btn').onclick = startGame;
+
+function startGame() {
+  document.getElementById('start').style.display = 'none';
+  document.getElementById('game').style.display = 'block';
+  balance = START_BALANCE;
+  stockPrices = STOCKS.map(stock=>Math.random() * (stock.max-stock.min) + stock.min);
+  stockCounts = new Array(STOCKS.length).fill(0);
+  trends = new Array(STOCKS.length).fill(0);
+  histories = stockPrices.map((start,idx) => {
+    let arr = [start];
+    for(let i=1;i<15;i++) {
+      let prev = arr[i-1];
+      let stock = STOCKS[idx];
+      let change = (Math.random()-0.5) * stock.volatility * 10;
+      arr.push(Math.max(stock.min/2, prev+change));
+    }
+    return arr;
+  });
+  stockPrices = histories.map(arr => arr[arr.length-1]);
+  unlockedStocks = STOCKS.map((stock, idx)=> (stock.locked ? false : true));
+  achievements = { doubled: false, lostBig: false, crash: false, rally: false };
+  rallyActive = false;
+  rallyCountdown = 0;
+  renderCharts();
+  updateBalance();
+  renderTimer();
+  timer = 600;
+  intervalId = setInterval(tick, 1000);
+}
+
+function tick() {
+  if (timer > 0) {
+    timer--;
+    for(let i=4;i<STOCKS.length;i++){
+      if(!unlockedStocks[i]){
+        const secElapsed = 600-timer;
+        if(secElapsed >= STOCKS[i].unlockAt && STOCKS[i].unlockCost===0){
+          unlockedStocks[i] = true;
+          showPopup('event','Megnyílt: ' + STOCKS[i].name);
+        }
+      }
+    }
+    triggerMarketEvents();
+    maybeStartRally();
+    updateStocks();
+    renderCharts();
+    renderTimer();
+    checkAchievements();
+  } else {
+    clearInterval(intervalId);
+    gameEnd();
+  }
+}
+
+function updateStocks() {
+  for(let i=0;i<STOCKS.length;i++) {
+    if(i>=4 && !unlockedStocks[i]) continue;
+    let stock = STOCKS[i];
+    let bias = stock.bias;
+    if(rallyActive) bias = Math.max(0.80, bias);
+    if(trends[i] !== 0){
+      bias = trends[i] > 0 ? Math.max(bias, 0.85) : Math.min(bias, 0.35);
+    }
+    let direction = Math.random() < bias ? 1 : -1;
+    let volatility = stock.volatility;
+    if(rallyActive) volatility *= 2.75;
+    let change = direction * (Math.random() * volatility * 10 + volatility * 5);
+    stockPrices[i] += change;
+    stockPrices[i] = Math.max(stock.min/2, Math.min(stockPrices[i], stock.max*3));
+    histories[i].push(stockPrices[i]);
+    if(histories[i].length > 30) histories[i] = histories[i].slice(-30);
+    trends[i]=0;
+  }
+}
+
+function renderCharts() {
+  const chartsDiv = document.getElementById('charts');
+  chartsDiv.innerHTML = '';
+  for (let row=0; row<2; row++) {
+    let chartRow = document.createElement('div');
+    chartRow.className = 'chart-row';
+    for(let col=0; col<4; col++){
+      let i = row*4 + col;
+      let stock = STOCKS[i];
+      let container = document.createElement('div');
+      container.className = 'chart-container';
+      if(row==1 && !unlockedStocks[i]){
+        container.classList.add('locked');
+      }
+      let chartTitle = document.createElement('div');
+      chartTitle.className = 'chart-title';
+      chartTitle.textContent = stock.name;
+      container.appendChild(chartTitle);
+      if(rallyActive && unlockedStocks[i]){
+        let rallyInd = document.createElement('div');
+        rallyInd.className = 'rally-indicator';
+        rallyInd.textContent = 'Rally!';
+        container.appendChild(rallyInd);
+      }
+      let canvas = document.createElement('canvas');
+      canvas.width = 170; canvas.height = 70;
+      canvas.className = 'chart-canvas';
+      drawChart(canvas, histories[i], stock.color);
+      container.appendChild(canvas);
+
+      let arr = histories[i];
+      let perc = arr.length >= 2 ? ((arr[arr.length-1] - arr[0]) / arr[0] * 100).toFixed(1) : '0.0';
+      let percbox = document.createElement('div');
+      percbox.className = 'percent-box';
+      percbox.textContent = (perc >= 0 ? '▲ ' : '▼ ') + Math.abs(perc) + ' %';
+      percbox.style.color = perc >= 0 ? '#099d1c' : '#d9534f';
+      container.appendChild(percbox);
+
+      let actions = document.createElement('div');
+      actions.className = 'actions';
+      let buyBtn = document.createElement('button');
+      buyBtn.textContent = 'Buy';
+      buyBtn.disabled = balance < stockPrices[i] || balance >= MAX_BALANCE || (row==1 && !unlockedStocks[i]);
+      buyBtn.onclick = () => buyStock(i);
+
+      let sellBtn = document.createElement('button');
+      sellBtn.textContent = 'Sell';
+      sellBtn.disabled = stockCounts[i] <= 0 || (row==1 && !unlockedStocks[i]);
+      sellBtn.onclick = () => sellStock(i);
+
+      actions.appendChild(sellBtn);
+      actions.appendChild(buyBtn);
+      container.appendChild(actions);
+
+      let priceDiv = document.createElement('div');
+      priceDiv.className = 'stock-price';
+      priceDiv.textContent = stockPrices[i].toFixed(1) + ' $';
+      container.appendChild(priceDiv);
+
+      let countDiv = document.createElement('div');
+      countDiv.className = 'stock-count';
+      countDiv.textContent = 'Darab: ' + stockCounts[i];
+      container.appendChild(countDiv);
+
+      if(row==1 && !unlockedStocks[i]){
+        const secElapsed = 600-timer;
+        if(secElapsed < stock.unlockAt){
+          let unlockBox = document.createElement('div');
+          unlockBox.className = 'unlock-box';
+          unlockBox.textContent = 'Elérhető ' + Math.max(0,stock.unlockAt - secElapsed)+' s múlva';
+          container.appendChild(unlockBox);
+        } else if(stock.unlockCost>0){
+          let unlockReadyDiv = document.createElement('div');
+          unlockReadyDiv.className = 'unlock-ready';
+          unlockReadyDiv.textContent = 'Feloldás ára: '+stock.unlockCost+' $';
+          let unlockBtn = document.createElement('button');
+          unlockBtn.textContent = 'Feloldás!';
+          unlockBtn.className = 'unlock-btn';
+          unlockBtn.disabled = balance < stock.unlockCost;
+          unlockBtn.onclick = ((idx, stockObj)=>{
+            return function(){
+              if(balance >= stockObj.unlockCost){
+                balance -= stockObj.unlockCost;
+                unlockedStocks[idx]=true;
+                renderCharts();
+                updateBalance();
+                showPopup('event','Megnyílt: '+stockObj.name);
+              }
+            }
+          })(i, stock);
+          unlockReadyDiv.appendChild(unlockBtn);
+          container.appendChild(unlockReadyDiv);
+        }
+      }
+      chartRow.appendChild(container);
+    }
+    chartsDiv.appendChild(chartRow);
+  }
+}
+
+function buyStock(i){
+  let cost = Math.round(stockPrices[i]*10)/10;
+  if(balance>=cost && balance < MAX_BALANCE && unlockedStocks[i]){
+    balance -= cost;
+    balance = Math.round(balance*10)/10;
+    stockCounts[i]++;
+    trends[i]=STOCKS[i].trendUpOnBuy ? 1 : -1;
+    updateBalance();
+    renderCharts();
+    checkAchievements();
+  }
+}
+function sellStock(i){
+  if(stockCounts[i]>0 && unlockedStocks[i]){
+    let profit = Math.round(stockPrices[i]*10)/10;
+    balance += profit;
+    balance = Math.round(balance*10)/10;
+    stockCounts[i]--;
+    trends[i]=STOCKS[i].trendUpOnSell ? 1 : -1;
+    updateBalance();
+    renderCharts();
+    checkAchievements();
+    crashIfNeeded();
+  }
+}
+function updateBalance(){
+  document.getElementById('balanceVal').textContent = balance;
+}
+
+function triggerMarketEvents(){
+  if(Math.random()<0.11){
+    let affected = [];
+    for(let i=0;i<STOCKS.length;i++) if(unlockedStocks[i] && (Math.random()<0.25 || i>=4)) affected.push(i);
+    if(affected.length === 0) return;
+    let direction = Math.random()<0.60 ? 1 : -1;
+    affected.forEach(idx=>{
+      let stock = STOCKS[idx];
+      let impact = direction * (Math.random()*stock.volatility * 41 + 9);
+      stockPrices[idx]+=impact;
+      histories[idx].push(stockPrices[idx]);
+    });
+    showPopup('event', direction>0 ?
+      'PIACI HÍR! Emelkedés ezeknél: ' + affected.map(i=>STOCKS[i].name).join(', ')
+      : 'PIACI PÁNIK! Csökkenés ezeknél: ' + affected.map(i=>STOCKS[i].name).join(', ')
+    );
+  }
+}
+function maybeStartRally(){
+  if(!rallyActive && ((timer==420)||(timer==210)) && Math.random()<0.7){
+    rallyActive = true;
+    rallyCountdown = 30;
+    showPopup('rally','Rally! Minden ár hatszoros sebességgel mozog, nagyob eséllyel felfelé!');
+  }
+  if(rallyActive){
+    rallyCountdown--;
+    if(rallyCountdown<=0){
+      rallyActive=false;
+      showPopup('rally','Rally véget ért!');
+    }
+  }
+}
+function checkAchievements(){
+  if(!achievements.doubled && balance>=START_BALANCE*2){
+    achievements.doubled=true;
+    showPopup('achievement','Dupláztad az egyenleged! Bravó!');
+  }
+  if(!achievements.lostBig && balance<=START_BALANCE/2){
+    achievements.lostBig=true;
+    showPopup('achievement','Leesett az egyenleged a felére! Mélyrepülés!');
+  }
+}
+function crashIfNeeded(){
+  if(balance>=MAX_BALANCE){
+    showPopup('crash','TŐZSDEKRACH! Elbuktál 5000 dollárt!');
+    balance -= CRASH_LOSS;
+    if(balance<0) balance = 0;
+    updateBalance();
+    animateCrash();
+  }
+}
+function renderTimer(){
+  let min=Math.floor(timer/60).toString().padStart(2,'0');
+  let sec=(timer%60).toString().padStart(2,'0');
+  document.getElementById('timer').innerHTML = '<span class="val">'+min+' : '+sec+'</span>';
+  crashIfNeeded();
+}
+function gameEnd(){
+  document.getElementById('game').style.display='none';
+  document.getElementById('end').style.display='block';
+  document.getElementById('final-balance').textContent='Végső egyenleg: '+balance;
+}
+function showPopup(type,msg){
+  let box;
+  switch(type){
+    case 'event': box = document.getElementById('eventPopup'); break;
+    case 'achievement': box = document.getElementById('achievementPopup'); break;
+    case 'crash': box = document.getElementById('crashPopup'); break;
+    case 'rally': box = document.getElementById('rallyPopup'); break;
+  }
+  if(!box) return;
+  box.innerHTML=msg;
+  box.classList.add('show');
+  if(type==='crash'){
+    box.style.background='#e04040';
+    box.style.color='white';
+    box.style.border='2px solid #b30000';
+    setTimeout(()=>{ box.classList.remove('show'); box.style.background='#e04040'; box.style.color='white'; box.style.border='2px solid #b30000'; },6000);
+  }else{
+    setTimeout(()=>{box.classList.remove('show');},4000);
+  }
+}
+function animateCrash(){
+  let crashBox = document.getElementById('crashPopup');
+  crashBox.style.background='#e04040';
+  crashBox.style.color='white';
+  crashBox.style.border='2px solid #b30000';
+  setTimeout(()=>{
+    crashBox.style.background='#e04040';
+    crashBox.style.color='white';
+    crashBox.style.border='2px solid #b30000';
+  },6000);
+}
+function drawChart(canvas,data,color){
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  if(data.length<2) return;
+  let min=Math.min(...data); let max=Math.max(...data);
+  let pad=7; let range=max-min||1;
+  ctx.beginPath();
+  ctx.strokeStyle=color; ctx.lineWidth=2;
+  for(let i=0;i<data.length;i++){
+    let x=i/(data.length-1)*(canvas.width-2*pad)+pad;
+    let y=canvas.height-pad-((data[i]-min)/range)*(canvas.height-2*pad);
+    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+  ctx.beginPath(); ctx.strokeStyle='#c00'; ctx.lineWidth=1;
+  let avg=data.reduce((a,b)=>a+b,0)/data.length;
+  let yavg=canvas.height-pad-((avg-min)/range)*(canvas.height-2*pad);
+  ctx.moveTo(pad,yavg); ctx.lineTo(canvas.width-pad,yavg); ctx.stroke();
+}
+</script>
+</body>
+</html>
