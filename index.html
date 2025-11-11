@@ -4,47 +4,20 @@
   <meta charset="UTF-8">
   <title>TőzsdézIK</title>
   <style>
+    /* ... ugyanaz a stílus, amit küldtél ... */
     html, body { height: 100%; margin: 0; padding: 0; }
-    body {
-      font-family: 'Segoe UI', Arial, sans-serif;
-      background: #fff;
-      margin: 0; padding: 20px 0 0 0; text-align: center;
-      min-height: 100vh; max-height: 100vh; overflow: hidden;
-    }
-    .side-decor {
-      position: fixed;
-      top: 0; bottom: 0;
-      width: 132px;
-      pointer-events:none;
-      z-index: 0;
-      opacity: 0.5;
-    }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #fff; margin: 0; padding: 20px 0 0 0; text-align: center; min-height: 100vh; max-height: 100vh; overflow: hidden; }
+    .side-decor { position: fixed; top: 0; bottom: 0; width: 132px; pointer-events:none; z-index: 0; opacity: 0.5; }
     .side-left { left: 0; }
     .side-right { right: 0; transform: scaleX(-1);}
-    .currencies {
-      position: absolute;
-      font-size: 55px;
-      color: #b5b5b5;
-      font-weight: bold;
-      left: 12px; top: 38px;
-    }
-    .currencies span {
-      position: absolute;
-      opacity: 0.6;
-      animation: floatY 4s infinite alternate;
-    }
+    .currencies { position: absolute; font-size: 55px; color: #b5b5b5; font-weight: bold; left: 12px; top: 38px; }
+    .currencies span { position: absolute; opacity: 0.6; animation: floatY 4s infinite alternate;}
     .curr1 { top: 18px; left: 6px; color:#98c2ee; animation-duration:3s;}
     .curr2 { top: 65px; left: 30px; color:#eec498; animation-duration:4s;}
     .curr3 { top: 110px; left: 35px; color:#a3e9b7; animation-duration:5s;}
     .curr4 { top: 185px; left: 12px; color:#eee7aa; animation-duration:5.2s;}
-    @keyframes floatY {
-      from { transform: translateY(0px);}
-      to   { transform: translateY(16px);}
-    }
-    .svg-stockline {
-      position: absolute; left:2px; bottom:30px;
-      width:130px; height:220px; z-index:0; opacity:0.6;
-    }
+    @keyframes floatY { from { transform: translateY(0px);} to   { transform: translateY(16px);}}
+    .svg-stockline { position: absolute; left:2px; bottom:30px; width:130px; height:220px; z-index:0; opacity:0.6;}
     .svg-right { transform: scaleX(-1); right:2px; left:auto;}
     .start-screen, .game-screen, .end-screen { display: none; }
     #charts { display: flex; flex-direction: column; gap: 22px; justify-content: center; margin: 22px 0;}
@@ -66,16 +39,7 @@
     .unlock-box { font-size: 1em; margin-top: 7px; color: #555; }
     .unlock-ready { background: #ffd6dc; border-radius: 9px; margin-top: 10px; padding: 7px 8px; color: #d00; font-weight: bold; border: 2px solid #d00; display:flex; flex-direction:column; align-items:center;}
     .unlock-btn { margin-top:7px; background:#d00; color:white; border:none; border-radius:6px; padding:5px 18px; font-size:1em; font-weight:bold; cursor:pointer; }
-    .event-popup, .achievement-popup, .crash-popup, .rally-popup {
-      position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-      background: #ffd; border: 2px solid #333; border-radius: 14px;
-      z-index: 2000;
-      box-shadow: 0 3px 22px #999;
-      padding: 20px 26px;
-      font-size: 1.18em;
-      display:none;
-      max-width: 92vw; word-break: break-word; color: black;
-    }
+    .event-popup, .achievement-popup, .crash-popup, .rally-popup { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #ffd; border: 2px solid #333; border-radius: 14px; z-index: 2000; box-shadow: 0 3px 22px #999; padding: 20px 26px; font-size: 1.18em; display:none; max-width: 92vw; word-break: break-word; color: black; }
     .crash-popup.show { background:#e04040 !important; color:white !important; border:2px solid #b30000 !important;}
     .event-popup.show, .achievement-popup.show, .rally-popup.show { display:block; animation: popIn 0.3s; }
     .crash-popup.show { display:block; animation: popIn 0.3s;}
@@ -84,7 +48,7 @@
   </style>
 </head>
 <body>
-  <!-- OLDALSÓ DEKOR -->
+  <!-- OLDALSÓ DEKOR ... ugyanaz ... -->
   <div class="side-decor side-left">
     <div class="currencies">
       <span class="curr1">$</span>
@@ -93,8 +57,7 @@
       <span class="curr4">$</span>
     </div>
     <svg class="svg-stockline" viewBox="0 0 70 50">
-      <polyline points="0,40 12,44 20,22 25,13 32,33 37,7 47,25 60,11 70,20"
-                stroke="#88abce" stroke-width="3" fill="none"/>
+      <polyline points="0,40 12,44 20,22 25,13 32,33 37,7 47,25 60,11 70,20" stroke="#88abce" stroke-width="3" fill="none"/>
     </svg>
   </div>
   <div class="side-decor side-right">
@@ -104,22 +67,20 @@
       <span class="curr3">£</span>
     </div>
     <svg class="svg-stockline svg-right" viewBox="0 0 70 50">
-      <polyline points="0,20 12,38 20,11 25,23 32,28 37,12 47,39 60,13 70,29"
-                stroke="#eec498" stroke-width="3" fill="none"/>
+      <polyline points="0,20 12,38 20,11 25,23 32,28 37,12 47,39 60,13 70,29" stroke="#eec498" stroke-width="3" fill="none"/>
     </svg>
   </div>
-
   <div id="eventPopup" class="event-popup"></div>
   <div id="achievementPopup" class="achievement-popup"></div>
   <div id="crashPopup" class="crash-popup"></div>
   <div id="rallyPopup" class="rally-popup"></div>
   <div id="start" class="start-screen" style="display:block;">
     <h1>TőzsdézIK</h1>
-    <div id="timerStart" style="font-size:2em; margin-bottom:20px; font-weight: bold;">10 : 00</div>
+    <div id="timerStart" style="font-size:2em; margin-bottom:20px; font-weight: bold;">05 : 00</div>
     <button id="start-btn" style="font-size:2em;">START</button>
   </div>
   <div id="game" class="game-screen">
-    <div id="timer"><span class="val">10 : 00</span></div>
+    <div id="timer"><span class="val">05 : 00</span></div>
     <div class="balance">Egyenleg: <span class="val" id="balanceVal">5000</span></div>
     <div id="charts"></div>
   </div>
@@ -133,18 +94,24 @@
 const START_BALANCE = 5000;
 const MAX_BALANCE = 15000;
 const CRASH_LOSS = 5000;
+
+// 5 perces játék (300 másodperc)
+const GAME_SECONDS = 300;
+
+// Feloldások: 1, 2, 3, 4 perc után
 const STOCKS = [
   { ticker: 'A001', name: 'Microsoft', color: '#337ab7', min: 50, max: 250, volatility: 1.0, bias: 0.75, trendUpOnBuy: false, trendUpOnSell: true },
   { ticker: 'B002', name: 'Apple', color: '#d9534f', min: 200, max: 375, volatility: 0.5, bias: 0.65, trendUpOnBuy: false, trendUpOnSell: true },
   { ticker: 'C003', name: 'Nvidia', color: '#5bc0de', min: 300, max: 400, volatility: 2.5, bias: 0.70, trendUpOnBuy: true,  trendUpOnSell: true }, // szerencsés!
   { ticker: 'D004', name: 'Google', color: '#5cb85c', min: 150, max: 500, volatility: 1.5, bias: 0.40, trendUpOnBuy: false, trendUpOnSell: true },
-  { ticker: 'E005', name: 'Amazon', color: '#d088da', min: 450, max: 750, volatility: 1.0, bias: 0.65, locked: true, unlockAt: 60, unlockCost: 0, trendUpOnBuy: false, trendUpOnSell: true },
-  { ticker: 'F006', name: 'Tesla', color: '#e7a641', min: 600, max: 1000, volatility: 3.5, bias: 0.80, locked: true, unlockAt: 150, unlockCost: 500, trendUpOnBuy: true,  trendUpOnSell: true }, // szerencsés!
-  { ticker: 'G007', name: 'Oracle ', color: '#61a4b3', min: 500, max: 1000, volatility: 4.5, bias: 0.60, locked: true, unlockAt: 300, unlockCost: 1000, trendUpOnBuy: false, trendUpOnSell: true },
-  { ticker: 'H008', name: 'Visa', color: '#e04040', min: 400, max: 2000, volatility: 6.5, bias: 0.50, locked: true, unlockAt: 480, unlockCost: 2500, trendUpOnBuy: false, trendUpOnSell: true }
+  { ticker: 'E005', name: 'Amazon', color: '#d088da', min: 450, max: 750, volatility: 1.0, bias: 0.65, locked: true, unlockAt: 60, unlockCost: 0, trendUpOnBuy: false, trendUpOnSell: true },    // 1 perc (240-nál marad 4 percből)
+  { ticker: 'F006', name: 'Tesla', color: '#e7a641', min: 600, max: 1000, volatility: 3.5, bias: 0.80, locked: true, unlockAt: 120, unlockCost: 500, trendUpOnBuy: true,  trendUpOnSell: true },// 2 perc (180-nál marad 3 percből)
+  { ticker: 'G007', name: 'Oracle ', color: '#61a4b3', min: 500, max: 1000, volatility: 4.5, bias: 0.60, locked: true, unlockAt: 180, unlockCost: 1000, trendUpOnBuy: false, trendUpOnSell: true },// 3 perc (120-nál marad 2 percből)
+  { ticker: 'H008', name: 'Visa', color: '#e04040', min: 400, max: 2000, volatility: 6.5, bias: 0.50, locked: true, unlockAt: 240, unlockCost: 2500, trendUpOnBuy: false, trendUpOnSell: true }// 4 perc (60-nál marad 1 percből)
 ];
+
 let balance = START_BALANCE;
-let timer = 600;
+let timer = GAME_SECONDS;
 let intervalId;
 let stockPrices = [];
 let stockCounts = [];
@@ -182,19 +149,20 @@ function startGame() {
   renderCharts();
   updateBalance();
   renderTimer();
-  timer = 600;
+  timer = GAME_SECONDS;
   intervalId = setInterval(tick, 1000);
 }
-
 function tick() {
   if (timer > 0) {
     timer--;
     for(let i=4;i<STOCKS.length;i++){
       if(!unlockedStocks[i]){
-        const secElapsed = 600-timer;
-        if(secElapsed >= STOCKS[i].unlockAt && STOCKS[i].unlockCost===0){
-          unlockedStocks[i] = true;
-          showPopup('event','Megnyílt: ' + STOCKS[i].name);
+        const secElapsed = GAME_SECONDS-timer;
+        if(secElapsed >= STOCKS[i].unlockAt){
+          if(STOCKS[i].unlockCost===0){
+            unlockedStocks[i] = true;
+            showPopup('event','Megnyílt: ' + STOCKS[i].name);
+          }
         }
       }
     }
@@ -209,7 +177,6 @@ function tick() {
     gameEnd();
   }
 }
-
 function updateStocks() {
   for(let i=0;i<STOCKS.length;i++) {
     if(i>=4 && !unlockedStocks[i]) continue;
@@ -230,7 +197,6 @@ function updateStocks() {
     trends[i]=0;
   }
 }
-
 function renderCharts() {
   const chartsDiv = document.getElementById('charts');
   chartsDiv.innerHTML = '';
@@ -296,7 +262,7 @@ function renderCharts() {
       container.appendChild(countDiv);
 
       if(row==1 && !unlockedStocks[i]){
-        const secElapsed = 600-timer;
+        const secElapsed = GAME_SECONDS-timer;
         if(secElapsed < stock.unlockAt){
           let unlockBox = document.createElement('div');
           unlockBox.className = 'unlock-box';
@@ -330,12 +296,10 @@ function renderCharts() {
     chartsDiv.appendChild(chartRow);
   }
 }
-
 function buyStock(i){
   let cost = Math.round(stockPrices[i]*10)/10;
   if(balance>=cost && balance < MAX_BALANCE && unlockedStocks[i]){
-    balance -= cost;
-    balance = Math.round(balance*10)/10;
+    balance -= cost; balance = Math.round(balance*10)/10;
     stockCounts[i]++;
     trends[i]=STOCKS[i].trendUpOnBuy ? 1 : -1;
     updateBalance();
@@ -346,8 +310,7 @@ function buyStock(i){
 function sellStock(i){
   if(stockCounts[i]>0 && unlockedStocks[i]){
     let profit = Math.round(stockPrices[i]*10)/10;
-    balance += profit;
-    balance = Math.round(balance*10)/10;
+    balance += profit; balance = Math.round(balance*10)/10;
     stockCounts[i]--;
     trends[i]=STOCKS[i].trendUpOnSell ? 1 : -1;
     updateBalance();
@@ -359,7 +322,6 @@ function sellStock(i){
 function updateBalance(){
   document.getElementById('balanceVal').textContent = balance.toFixed(1);
 }
-
 function triggerMarketEvents(){
   if(Math.random()<0.11){
     let affected = [];
@@ -378,8 +340,9 @@ function triggerMarketEvents(){
     );
   }
 }
+// 2 rally: először 3:30-nál (90 mp-vel a vége előtt), majd 1:30-nál (210 mp-vel a vége előtt)
 function maybeStartRally(){
-  if(!rallyActive && ((timer==420)||(timer==180)) && Math.random()<0.7){
+  if(!rallyActive && (timer==210||timer==90)){
     rallyActive = true;
     rallyCountdown = 30;
     showPopup('rally','Rally! Minden ár hatszoros sebességgel mozog, nagyob eséllyel felfelé!');
@@ -444,14 +407,8 @@ function showPopup(type,msg){
 }
 function animateCrash(){
   let crashBox = document.getElementById('crashPopup');
-  crashBox.style.background='#e04040';
-  crashBox.style.color='white';
-  crashBox.style.border='2px solid #b30000';
-  setTimeout(()=>{
-    crashBox.style.background='#e04040';
-    crashBox.style.color='white';
-    crashBox.style.border='2px solid #b30000';
-  },6000);
+  crashBox.style.background='#e04040'; crashBox.style.color='white'; crashBox.style.border='2px solid #b30000';
+  setTimeout(()=>{crashBox.style.background='#e04040'; crashBox.style.color='white'; crashBox.style.border='2px solid #b30000';},6000);
 }
 function drawChart(canvas,data,color){
   const ctx = canvas.getContext('2d');
@@ -475,6 +432,3 @@ function drawChart(canvas,data,color){
 </script>
 </body>
 </html>
-
-
-
